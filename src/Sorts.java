@@ -1,6 +1,6 @@
 /*
- * NAME: TODO
- * PID:  TODO
+ * NAME: Gino Angelici
+ * PID:  A16779788
  */
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,8 +8,8 @@ import java.util.Collections;
 /**
  * Sorts class.
  * @param <T> Generic type
- * @author TODO
- * @since  TODO
+ * @author Gino Angelici
+ * @since  ${10/30/22}
  */
 public class Sorts<T extends Comparable<? super T>> {
 
@@ -23,7 +23,16 @@ public class Sorts<T extends Comparable<? super T>> {
      * @param end The final index of the subsection of Arraylist we want to sort
      */
     public void InsertionSort(ArrayList<T> list, int start, int end) {
-        // TODO
+        for (int i = 1; i < list.size(); i++) {
+            int j = i;
+            while (j > 0 && list.get(j).compareTo(list.get(j - 1)) < 0) {
+                // Swap list[j] and list[j - 1]
+                T temp = list.get(j);
+                list.set(j, list.get(j - 1));
+                list.set(j - 1, temp);
+                j--;
+            }
+        }
     }
 
     /**
@@ -91,7 +100,11 @@ public class Sorts<T extends Comparable<? super T>> {
      * @param end The final index of the subsection of Arraylist we want to sort
      */
     public void QuickSort(ArrayList<T> list, int start, int end) {
-        // TODO
+        // Only attempt to sort the array segment if there are
+        // at least 2 elements
+        if (end <= start) {
+            return;
+        }
     }
 
     /**
@@ -102,8 +115,44 @@ public class Sorts<T extends Comparable<? super T>> {
      * @param h right-most index we want to merge
      */
     private int partition(ArrayList<T> arr, int l, int h) {
-        // TODO
-        return -1;
+        // Select the middle value as the pivot.
+        int midpoint = l + (h - l) / MIDDLE_IDX;
+        T pivot = arr.get(midpoint);
+
+        // "low" and "high" start at the ends of the array segment
+        // and move towards each other.
+        int low = l;
+        int high = h;
+
+        boolean done = false;
+        while (!done) {
+            // Increment low while numbers[low] < pivot
+            while (arr.get(low).compareTo(pivot) < 0) {
+                low = low + 1;
+            }
+
+            // Decrement high while pivot < arr.get(high)
+            while (arr.get(high).compareTo(pivot) > 0) {
+                high = high - 1;
+            }
+
+            // If low and high have crossed each other, the loop
+            // is done. If not, the elements are swapped, low is
+            // incremented and high is decremented.
+            if (low >= high) {
+                done = true;
+            }
+            else {
+                T temp = arr.get(low);
+                arr.set(low, arr.get(high));
+                arr.set(high, temp);
+                low++;
+                high--;
+            }
+        }
+
+        // "high" is the last index in the left segment.
+        return high;
     }
 
     /**
