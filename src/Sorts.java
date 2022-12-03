@@ -3,6 +3,7 @@
  * PID:  A16779788
  */
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -23,9 +24,9 @@ public class Sorts<T extends Comparable<? super T>> {
      * @param end The final index of the subsection of Arraylist we want to sort
      */
     public void InsertionSort(ArrayList<T> list, int start, int end) {
-        for (int i = 1; i < list.size(); i++) {
+        for (int i = start+1; i <= end; i++) {
             int j = i;
-            while (j > 0 && list.get(j).compareTo(list.get(j - 1)) < 0) {
+            while (j > start && (list.get(j)).compareTo(list.get(j - 1)) < 0) {
                 // Swap list[j] and list[j - 1]
                 T temp = list.get(j);
                 list.set(j, list.get(j - 1));
@@ -43,7 +44,6 @@ public class Sorts<T extends Comparable<? super T>> {
      * @param end The final index of the subsection of Arraylist we want to sort
      */
     public void MergeSort(ArrayList<T> list, int start, int end) {
-
         if (start < end)
         {
             int mid = start + (end - start) / MIDDLE_IDX;
@@ -105,6 +105,15 @@ public class Sorts<T extends Comparable<? super T>> {
         if (end <= start) {
             return;
         }
+
+        // Partition the array segment
+        int high = partition(list, start, end);
+
+        // Recursively sort the left segment
+        QuickSort(list, start, high);
+
+        // Recursively sort the right segment
+        QuickSort(list, high + 1, end);
     }
 
     /**
@@ -166,7 +175,30 @@ public class Sorts<T extends Comparable<? super T>> {
      *               such that we switch to Insertion Sort
      */
     public void Modified_QuickSort(ArrayList<T> list, int start, int end, int cutoff) {
-        // TODO
+        // Only attempt to sort the array segment if there are
+        // at least 2 elements
+        if (end <= start) {
+            return;
+        }
+
+        // Partition the array segment
+        int high = partition(list, start, end);
+
+        // Recursively sort the left segment
+        if (end - start <= 3) {
+            InsertionSort(list, start, high);
+            return;
+        } else {
+            Modified_QuickSort(list, start, high, cutoff);
+        }
+
+        // Recursively sort the right segment
+        if (end - start <= 3) {
+            InsertionSort(list, start, high);
+            return;
+        } else {
+            Modified_QuickSort(list, high + 1, end, cutoff);
+        }
     }
 
     /**
@@ -177,7 +209,41 @@ public class Sorts<T extends Comparable<? super T>> {
      * @param end The final index of the subsection of Arraylist we want to sort
      */
     public void cocktailSort(ArrayList<T> list, int start, int end){
-        // TODO
+        boolean swapped = true;
+
+        while (swapped)
+        {
+            swapped = false;
+
+            for (int i = start; i <= end - 1; ++i)
+            {
+                if (list.get(i).compareTo(list.get(i + 1)) > 0) {
+                    T temp = list.get(i);
+                    list.set(i, list.get(i+1));
+                    list.set(i+1, temp);
+                    swapped = true;
+                }
+            }
+
+            if (!swapped)
+                break;
+
+            swapped = false;
+
+            end = end - 1;
+
+            for (int i = end; i >= start; i--)
+            {
+                if (list.get(i).compareTo(list.get(i + 1)) > 0) {
+                    T temp = list.get(i);
+                    list.set(i, list.get(i+1));
+                    list.set(i+1, temp);
+                    swapped = true;
+                }
+            }
+
+            start = start + 1;
+        }
     }
 
     /**
@@ -212,8 +278,27 @@ public class Sorts<T extends Comparable<? super T>> {
      * @param list The arraylist we want to sort
      */
     public ArrayList<T> bucketSort(ArrayList<T> list) {
-        // TODO
-        return null;
+        int numBuckets = assignNumBuckets(list);
+        ArrayList<T>[] bucketArray = new ArrayList[numBuckets];
+        T min = Collections.min(list);
+        for (int i = 0; i < bucketArray.length; i++) {
+            bucketArray[i] = new ArrayList<>();
+        }
+        for (int i = 0; i < list.size(); i++) {
+            int index = assignBucketIndex(list.get(i), numBuckets, min);
+            T add = list.get(i);
+            bucketArray[index].add(add);
+        }
+        ArrayList<T> returnArrayList = new ArrayList<>();
+        for (int i = 0; i < bucketArray.length; i++) {
+            ArrayList toSort = bucketArray[i];
+            InsertionSort(toSort, 0, toSort.size()-1);
+            returnArrayList.addAll(toSort);
+        }
+        for (int i = 0; i < returnArrayList.size(); i++) {
+            list.set(i, returnArrayList.get(i));
+        }
+        return list;
     }
 
 }
